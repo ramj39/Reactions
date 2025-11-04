@@ -1,0 +1,4 @@
+streamlet
+chempy
+rdkit-pypi
+Pillow
