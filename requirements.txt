@@ -1,4 +1,7 @@
-streamlet
+streamlit
 chempy
 rdkit-pypi
 Pillow
+matplotlib
+numpy
+pandas
