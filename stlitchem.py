@@ -5,8 +5,8 @@ st.title("💊 Chemical Dashboard")
 st.title("💊 Chemical_ Dashboard")
 # Dictionary with display names and their respective URLs
 apps = {
-    "streamlit_organic_ rxns.py":,
-    "streamlit_chemical_ reactions.py"
+    "streamlit_organic_ rxns.py",
+    "streamlit_chemical_ reactions.py",
 }
 
 st.write("Click a button below to open an app (make sure each app is running on its own port):")
