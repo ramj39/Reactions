@@ -5,8 +5,8 @@ st.title("💊 Chemical Dashboard")
 st.title("💊 Chemical_ Dashboard")
 # Dictionary with display names and their respective URLs
 apps = {
-    "Chemical Reactions": "https://chemical-reactions.streamlit.app",
-    "Organic Reactions": "https://organic-reactions.streamlit.app",
+    "streamlit_chemical Reactions": "https://chemical-reactions.streamlit.app",
+    "streamlit_organic Reactions": "https://organic-reactions.streamlit.app",
    
 }
 
