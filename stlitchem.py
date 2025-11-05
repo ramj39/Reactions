@@ -7,7 +7,8 @@ st.title("💊 Chemical_ Dashboard")
 apps = {
     "streamlit_organic_ rxns.py":"http://localhost:8501",
     "streamlit_chemical_ reactions.py":"http://localhost:8502",
-    
+    "compound_chembl_bioactivity.py":"http://localhost:8503",
+    "compound_chem_tool.py":"http://localhost:8504",
 }
 
 for app_label, url in apps.items():
