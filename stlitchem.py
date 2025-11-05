@@ -16,7 +16,7 @@ for app_label, url in apps.items():
         st.write(f"Launching {app_label} at {url}")
         # Or use st.markdown with a link, or st.write with an anchor tag
 
-}
+
 
 st.write("Click a button below to open an app (make sure each app is running on its own port):")
 
