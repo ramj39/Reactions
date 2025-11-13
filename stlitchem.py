@@ -5,10 +5,10 @@ st.title("💊 Chemical Dashboard")
 st.title("💊 Chemical_ Dashboard")
 # Dictionary with display names and their respective URLs
 apps = {
-    "streamlit_organic_ rxns.py":"http://localhost:8501",
-    "streamlit_chemical_ reactions.py":"http://localhost:8502",
-    "compound_chembl_bioactivity.py":"http://localhost:8503",
-    "compound_chem_tool.py":"http://localhost:8504",
+    "streamlit_organic_ rxns.py"#:"http://localhost:8501",
+    "streamlit_chemical_ reactions.py"#:"http://localhost:8502",
+    "compound_chembl_bioactivity.py"#:"http://localhost:8503",
+    "compound_chem_tool.py"#:"http://localhost:8504",
 }
 st.write("Click a button below to open an app(make sure each app is running on its own port):")
 
@@ -33,3 +33,4 @@ for app_label, url in apps.items():
 #st.markdown(f'<meta http -equiv="refresh" content="0; url={url}">', unsafe_allow_html=True)'''
 
 st.info("Developed by Subramanian Ramajayam")
+
