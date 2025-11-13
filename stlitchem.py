@@ -2,14 +2,20 @@ import streamlit as st
 
 st.set_page_config(page_title="Chemical Reactions Dashboard", layout="centered")
 st.title("💊 Chemical Dashboard")
+apps = {
+    "Organic Reactions": "https://ramj39-streamlit-organic-rxns.streamlit.app",
+    "Chemical Reactions": "https://ramj39-streamlit-chemical-reactions.streamlit.app",
+    "ChEMBL Bioactivity": "https://ramj39-compound-chembl-bioactivity.streamlit.app",
+    "Chemical Tools": "https://ramj39-compound-chem-tool.streamlit.app",
+}
 
 # ✅ This is a dictionary, not a set
-apps = {
+'''apps = {
     "Organic Reactions": "https://your-username-organic-rxns.streamlit.app",
     "Chemical Reactions": "https://your-username-chemical-reactions.streamlit.app",
     "ChEMBL Bioactivity": "https://your-username-chembl-bioactivity.streamlit.app",
     "Chemical Tools": "https://your-username-chem-tool.streamlit.app",
-}
+}'''
 
 st.write("Click a button below to open an app (make sure each app is deployed and accessible):")
 
@@ -19,3 +25,4 @@ for app_label, url in apps.items():
         st.markdown(f"[Click here to open {app_label}]({url})", unsafe_allow_html=True)
 
 st.info("Developed by Subramanian Ramajayam")
+
