@@ -1,36 +1,26 @@
 import streamlit as st
+
+# Set page configuration
 st.set_page_config(page_title="Chemical Reactions Dashboard", layout="centered")
 st.title("💊 Chemical Dashboard")
 
-st.title("💊 Chemical_ Dashboard")
-# Dictionary with display names and their respective URLs
+# Dictionary with display names and their respective cloud URLs
 apps = {
-    "streamlit_organic_ rxns.py"#:"http://localhost:8501",
-    "streamlit_chemical_ reactions.py"#:"http://localhost:8502",
-    "compound_chembl_bioactivity.py"#:"http://localhost:8503",
-    "compound_chem_tool.py"#:"http://localhost:8504",
+    "Organic Reactions": "https://your-username-organic-rxns.streamlit.app",
+    "Chemical Reactions": "https://your-username-chemical-reactions.streamlit.app",
+    "ChEMBL Bioactivity": "https://your-username-chembl-bioactivity.streamlit.app",
+    "Chemical Tools": "https://your-username-chem-tool.streamlit.app",
 }
-st.write("Click a button below to open an app(make sure each app is running on its own port):")
 
+st.write("Click a button below to open an app (make sure each app is deployed and accessible):")
+
+# Render buttons and links
 for app_label, url in apps.items():
     if st.button(f"Launch {app_label}", key=f"btn_{app_label}"):
-        #st.experimental_set_query_params()  # example action
-        #st.write(f"Launching {app_label} at {url}")
+        st.success(f"{app_label} is ready to launch!")
+        st.markdown(f"[Click here to open {app_label}]({url})", unsafe_allow_html=True)
 
-        st.write(f"Launching {app_label}...") 
-        st.markdown(f'<a href= "{url}" target = "_blank">Click here to open {app_label}</a>', unsafe_allow_html=True)
-        # Or use st.markdown with a link, or st.write with an anchor tag
-
-
-
-#st.write("Click a button below to open an app (make sure each app is running on its own port):")
-
-# Render buttons for each app
-'''for app_label, url in apps.items():
-    if st.button(f"Launch {app_label}"):
-       st.link_button(f"Launch {app_label}", url)
- 
-#st.markdown(f'<meta http -equiv="refresh" content="0; url={url}">', unsafe_allow_html=True)'''
-
+# Footer
 st.info("Developed by Subramanian Ramajayam")
+
 
