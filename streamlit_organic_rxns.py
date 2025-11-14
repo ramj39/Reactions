@@ -63,93 +63,58 @@ def display_compound(comp_name, smiles, description=""):
     else:
         st.error(f"Invalid SMILES for {comp_name}: {smiles}")
 
-def main():
-    st.markdown('<h1 class="main-header">🧪 Organic Chemistry Reaction Visualizer</h1>', 
-                unsafe_allow_html=True)
-    
-    # Sidebar for navigation
-    st.sidebar.title("Navigation")
-    reaction_type = st.sidebar.selectbox(
-        "Select Reaction Type",
-        ["Oxidation", "Reduction", "Rearrangement", "Substitution", "Elimination", "Addition"]
-    )
-    
-    # Compound A input
-    st.sidebar.header("Compound A Input")
-    custom_mode = st.sidebar.checkbox("Use custom compound")
-    
-    if custom_mode:
-        compound_a_smiles = st.sidebar.text_input("Enter SMILES for Compound A", "CCO")
-        compound_a_name = st.sidebar.text_input("Compound A Name", "Ethanol")
-    else:
-        predefined_compounds = {
-            "Ethanol": "CCO",
-            "Methanol": "CO",
-            "Acetaldehyde": "CC=O",
-            "Acetic Acid": "CC(=O)O",
-            "Cyclohexanol": "C1CCC(CC1)O",
-            "Benzaldehyde": "c1ccc(cc1)C=O",
-            "2-Propanol": "CC(O)C",
-            "1-Butanol": "CCCCO"
-        }
-        selected_compound = st.sidebar.selectbox("Select Compound A", list(predefined_compounds.keys()))
-        compound_a_name = selected_compound
-        compound_a_smiles = predefined_compounds[selected_compound]
-    
-    # Main content area
-    st.header(f"{reaction_type} Reactions")
-    
-    # Display Compound A
-    st.subheader("Starting Compound")
-    display_compound(compound_a_name, compound_a_smiles)
-    
-    # Reaction examples based on selected type
-    if reaction_type == "Oxidation":
-        show_oxidation_reactions(compound_a_name, compound_a_smiles)
-    elif reaction_type == "Reduction":
-        show_reduction_reactions(compound_a_name, compound_a_smiles)
-    elif reaction_type == "Rearrangement":
-        show_rearrangement_reactions(compound_a_name, compound_a_smiles)
-    elif reaction_type == "Substitution":
-        show_substitution_reactions(compound_a_name, compound_a_smiles)
-    elif reaction_type == "Elimination":
-        show_elimination_reactions(compound_a_name, compound_a_smiles)
-    elif reaction_type == "Addition":
-        show_addition_reactions(compound_a_name, compound_a_smiles)
+def show_reaction_example(reaction_name, reaction_data, compound_name, compound_smiles):
+    """Display a specific reaction example"""
+    with st.expander(f"🎯 {reaction_name}"):
+        st.write(f"*Description:* {reaction_data.get('description', '')}")
+        st.write(f"*Reagents:* {reaction_data['reagents']}")
+        st.write(f"*Conditions:* {reaction_data['conditions']}")
+        
+        if "wikipedia" in reaction_data:
+            st.markdown(f"[📚 Wikipedia Article]({reaction_data['wikipedia']})")
+        
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            display_compound("Reactant", compound_smiles, compound_name)
+        
+        with col2:
+            st.markdown("<h3 style='text-align: center;'>→</h3>", unsafe_allow_html=True)
+            st.write("*Reaction*")
+        
+        with col3:
+            if "product_smiles" in reaction_data:
+                display_compound("Product", reaction_data["product_smiles"], "Example Product")
+            else:
+                st.info("Product prediction not available for this compound")
 
 def show_oxidation_reactions(compound_name, smiles):
     """Display oxidation reactions"""
     st.markdown('<div class="reaction-section">', unsafe_allow_html=True)
     
-    # Common oxidation reactions database
     oxidation_reactions = {
         "Alcohol to Aldehyde": {
-            "reactant_smiles": ["CCO"],  # Ethanol
-            "reactant_smiles": ["CCCO"],  # Propanol 
-            "reactant_smiles": ["CCCCO"],  # Butanol
-            "product_smiles": "CC=O",# Acetaldehyde
-            "product_smiles": "CCC=O",# Prapanaldehyde
-            "product_smiles": "CCCC=O",# Butanaldehyde
+            "product_smiles": "CC=O",
             "reagents": "PCC, CrO₃, or KMnO₄",
-            "conditions": "Mild oxidation, anhydrous conditions"
+            "conditions": "Mild oxidation, anhydrous conditions",
+            "description": "Oxidation of primary alcohols to aldehydes"
         },
         "Alcohol to Carboxylic Acid": {
-            "reactant_smiles": ["CCO", "CCCO"],  # Primary alcohols
-            "product_smiles": "C(=O)O",  # Carboxylic acid pattern
+            "product_smiles": "CC(=O)O",
             "reagents": "KMnO₄, K₂Cr₂O₇/H₂SO₄",
-            "conditions": "Strong oxidation, acidic conditions"
+            "conditions": "Strong oxidation, acidic conditions",
+            "description": "Oxidation of primary alcohols to carboxylic acids"
         },
         "Aldehyde to Carboxylic Acid": {
-            "reactant_smiles": ["CC=O"],  # Acetaldehyde
-            "product_smiles": "CC(=O)O",  # Acetic acid
+            "product_smiles": "CC(=O)O",
             "reagents": "Tollens' reagent, KMnO₄",
-            "conditions": "Mild conditions"
+            "conditions": "Mild conditions",
+            "description": "Oxidation of aldehydes to carboxylic acids"
         }
     }
     
     mol = Chem.MolFromSmiles(smiles)
     if mol:
-        # Check what functional groups are present
         alcohol_pattern = Chem.MolFromSmarts("[OX2H]")
         aldehyde_pattern = Chem.MolFromSmarts("[CX3H1](=O)[#6]")
         
@@ -175,22 +140,22 @@ def show_reduction_reactions(compound_name, smiles):
     
     reduction_reactions = {
         "Aldehyde to Primary Alcohol": {
-            "reactant_smiles": ["CC=O"],
             "product_smiles": "CCO",
             "reagents": "NaBH₄, LiAlH₄",
-            "conditions": "Room temperature"
+            "conditions": "Room temperature",
+            "description": "Reduction of aldehydes to primary alcohols"
         },
         "Ketone to Secondary Alcohol": {
-            "reactant_smiles": ["CC(=O)C"],
             "product_smiles": "CC(O)C",
             "reagents": "NaBH₄, LiAlH₄",
-            "conditions": "Room temperature"
+            "conditions": "Room temperature",
+            "description": "Reduction of ketones to secondary alcohols"
         },
         "Carboxylic Acid to Alcohol": {
-            "reactant_smiles": ["CC(=O)O"],
             "product_smiles": "CCO",
             "reagents": "LiAlH₄",
-            "conditions": "Anhydrous conditions"
+            "conditions": "Anhydrous conditions",
+            "description": "Reduction of carboxylic acids to primary alcohols"
         }
     }
     
@@ -389,55 +354,224 @@ def show_addition_reactions(compound_name, smiles):
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-def show_reaction_example(reaction_name, reaction_data, compound_name, compound_smiles):
-    """Display a specific reaction example"""
-    with st.expander(f"🎯 {reaction_name}"):
-        st.write(f"*Reagents:* {reaction_data['reagents']}")
-        st.write(f"*Conditions:* {reaction_data['conditions']}")
-        
-        col1, col2, col3 = st.columns([1, 1, 1])
-        
-        with col1:
-            display_compound("Reactant", compound_smiles, compound_name)
-        
-        with col2:
-            st.markdown("<h3 style='text-align: center;'>→</h3>", unsafe_allow_html=True)
-            st.write("*Reaction*")
-        
-        with col3:
-            # Try to generate product based on reaction pattern
-            product_smiles = predict_product(compound_smiles, reaction_name)
-            if product_smiles:
-                display_compound("Product", product_smiles, "Predicted Product")
-            else:
-                # Show example product if prediction not available
-                if "product_smiles" in reaction_data:
-                    display_compound("Example Product", reaction_data["product_smiles"], "Example Reaction")
-                else:
-                    st.info("Product prediction not available for this compound")
-
-def predict_product(smiles, reaction_type):
-    """Simple product prediction based on reaction type"""
-    mol = Chem.MolFromSmiles(smiles)
-    if mol:
-        if "Alcohol to Aldehyde" in reaction_type:
-            # Simple transformation: primary alcohol to aldehyde
-            pattern = Chem.MolFromSmarts("[CH2][OH]")
-            if mol.HasSubstructMatch(pattern):
-                # This is a simplified transformation
-                return smiles.replace("CO", "C=O")
-        
-        elif "Alcohol to Carboxylic Acid" in reaction_type:
-            pattern = Chem.MolFromSmarts("[CH2][OH]")
-            if mol.HasSubstructMatch(pattern):
-                return smiles.replace("CO", "C(=O)O")
-        
-        elif "Aldehyde to Carboxylic Acid" in reaction_type:
-            pattern = Chem.MolFromSmarts("C=O")
-            if mol.HasSubstructMatch(pattern):
-                return smiles.replace("C=O", "C(=O)O")
+def show_named_reactions(compound_name, smiles):
+    """Display famous named reactions"""
+    st.markdown('<div class="reaction-section">', unsafe_allow_html=True)
     
-    return None
+    named_reactions = {
+        "Diels-Alder Reaction": {
+            "reactant_smiles": "C=CC=C.C=C(C=O)",
+            "product_smiles": "C1C=CC(C=O)C1",
+            "reagents": "Heat",
+            "conditions": "Thermal, concerted mechanism",
+            "description": "[4+2] cycloaddition between diene and dienophile",
+            "wikipedia": "https://en.wikipedia.org/wiki/Diels–Alder_reaction"
+        },
+        "Wittig Reaction": {
+            "reactant_smiles": "C=O",
+            "product_smiles": "C=C",
+            "reagents": "Ph₃P=CH₂",
+            "conditions": "Basic conditions",
+            "description": "Conversion of carbonyls to alkenes using phosphonium ylides",
+            "wikipedia": "https://en.wikipedia.org/wiki/Wittig_reaction"
+        },
+        "Grignard Reaction": {
+            "reactant_smiles": "C=O",
+            "product_smiles": "CO",
+            "reagents": "RMgBr",
+            "conditions": "Anhydrous conditions",
+            "description": "Addition of organomagnesium compounds to carbonyls",
+            "wikipedia": "https://en.wikipedia.org/wiki/Grignard_reaction"
+        },
+        "Aldol Condensation": {
+            "reactant_smiles": "CC=O",
+            "product_smiles": "CC(=O)CC=O",
+            "reagents": "NaOH",
+            "conditions": "Basic conditions",
+            "description": "Formation of β-hydroxy carbonyl compounds",
+            "wikipedia": "https://en.wikipedia.org/wiki/Aldol_reaction"
+        }
+    }
+    
+    st.subheader("Famous Named Reactions")
+    st.info("Classic organic reactions with historical significance")
+    
+    for reaction_name, data in named_reactions.items():
+        with st.expander(f"🏆 {reaction_name}"):
+            st.write(f"*Description:* {data['description']}")
+            st.write(f"*Reagents:* {data['reagents']}")
+            st.write(f"*Conditions:* {data['conditions']}")
+            
+            if "wikipedia" in data:
+                st.markdown(f"[📚 Wikipedia Article]({data['wikipedia']})")
+            
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                display_compound("Reactant(s)", data["reactant_smiles"])
+            with col2:
+                st.markdown("<h3 style='text-align: center;'>→</h3>", unsafe_allow_html=True)
+                st.write("*Named Reaction*")
+            with col3:
+                display_compound("Product", data["product_smiles"])
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def show_coupling_reactions(compound_name, smiles):
+    """Display modern coupling reactions"""
+    st.markdown('<div class="reaction-section">', unsafe_allow_html=True)
+    
+    coupling_reactions = {
+        "Suzuki Coupling": {
+            "reactant_smiles": "Brc1ccccc1.B(O)(O)c1ccccc1",
+            "product_smiles": "c1ccc(cc1)-c2ccccc2",
+            "reagents": "Pd(PPh₃)₄, Base",
+            "conditions": "Mild conditions",
+            "description": "Palladium-catalyzed cross-coupling of boronic acids with halides",
+            "wikipedia": "https://en.wikipedia.org/wiki/Suzuki_reaction"
+        },
+        "Heck Reaction": {
+            "reactant_smiles": "Brc1ccccc1.C=C",
+            "product_smiles": "C=Cc1ccccc1",
+            "reagents": "Pd(OAc)₂, Base",
+            "conditions": "Palladium catalysis",
+            "description": "Coupling of alkenes with aryl/vinyl halides",
+            "wikipedia": "https://en.wikipedia.org/wiki/Heck_reaction"
+        }
+    }
+    
+    st.subheader("Modern Coupling Reactions")
+    st.info("Palladium-catalyzed cross-coupling reactions (Nobel Prize 2010)")
+    
+    for reaction_name, data in coupling_reactions.items():
+        with st.expander(f"🔗 {reaction_name}"):
+            st.write(f"*Description:* {data['description']}")
+            st.write(f"*Reagents:* {data['reagents']}")
+            st.write(f"*Conditions:* {data['conditions']}")
+            
+            if "wikipedia" in data:
+                st.markdown(f"[📚 Wikipedia Article]({data['wikipedia']})")
+            
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                display_compound("Reactants", data["reactant_smiles"])
+            with col2:
+                st.markdown("<h3 style='text-align: center;'>→</h3>", unsafe_allow_html=True)
+                st.write("*Coupling*")
+            with col3:
+                display_compound("Product", data["product_smiles"])
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def show_carbonyl_reactions(compound_name, smiles):
+    """Display carbonyl chemistry reactions"""
+    st.markdown('<div class="reaction-section">', unsafe_allow_html=True)
+    
+    carbonyl_reactions = {
+        "Knoevenagel Condensation": {
+            "reactant_smiles": "O=CC=O",
+            "product_smiles": "C=C(C=O)C=O",
+            "reagents": "Amine catalyst",
+            "conditions": "Basic conditions",
+            "description": "Condensation of carbonyls with active methylene compounds",
+            "wikipedia": "https://en.wikipedia.org/wiki/Knoevenagel_condensation"
+        },
+        "Michael Addition": {
+            "reactant_smiles": "C=C(C=O)C",
+            "product_smiles": "CC(C=O)CC=O",
+            "reagents": "Base catalyst",
+            "conditions": "Mild conditions",
+            "description": "Conjugate addition to α,β-unsaturated carbonyls",
+            "wikipedia": "https://en.wikipedia.org/wiki/Michael_reaction"
+        }
+    }
+    
+    st.subheader("Carbonyl Chemistry Reactions")
+    st.info("Reactions involving carbonyl functional groups")
+    
+    for reaction_name, data in carbonyl_reactions.items():
+        with st.expander(f"🎯 {reaction_name}"):
+            st.write(f"*Description:* {data['description']}")
+            st.write(f"*Reagents:* {data['reagents']}")
+            st.write(f"*Conditions:* {data['conditions']}")
+            
+            if "wikipedia" in data:
+                st.markdown(f"[📚 Wikipedia Article]({data['wikipedia']})")
+            
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                display_compound("Reactant", data["reactant_smiles"])
+            with col2:
+                st.markdown("<h3 style='text-align: center;'>→</h3>", unsafe_allow_html=True)
+                st.write("*Carbonyl Reaction*")
+            with col3:
+                display_compound("Product", data["product_smiles"])
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def main():
+    st.markdown('<h1 class="main-header">🧪 Organic Chemistry Reaction Visualizer</h1>', 
+                unsafe_allow_html=True)
+    
+    # Sidebar for navigation
+    st.sidebar.title("Navigation")
+    reaction_type = st.sidebar.selectbox(
+        "Select Reaction Type",
+        ["Oxidation", "Reduction", "Rearrangement", "Substitution", "Elimination", "Addition", 
+         "Named Reactions", "Coupling Reactions", "Carbonyl Chemistry"]
+    )
+    
+    # Compound A input
+    st.sidebar.header("Compound A Input")
+    custom_mode = st.sidebar.checkbox("Use custom compound")
+    
+    if custom_mode:
+        compound_a_smiles = st.sidebar.text_input("Enter SMILES for Compound A", "CCO")
+        compound_a_name = st.sidebar.text_input("Compound A Name", "Ethanol")
+    else:
+        predefined_compounds = {
+            "Ethanol": "CCO",
+            "Methanol": "CO",
+            "Acetaldehyde": "CC=O",
+            "Acetic Acid": "CC(=O)O",
+            "Cyclohexanol": "C1CCC(CC1)O",
+            "Benzaldehyde": "c1ccc(cc1)C=O",
+            "2-Propanol": "CC(O)C",
+            "1-Butanol": "CCCCO",
+            "Acetone": "CC(=O)C",
+            "Benzene": "c1ccccc1",
+            "Ethene": "C=C",
+            "Acetylene": "C#C"
+        }
+        selected_compound = st.sidebar.selectbox("Select Compound A", list(predefined_compounds.keys()))
+        compound_a_name = selected_compound
+        compound_a_smiles = predefined_compounds[selected_compound]
+    
+    # Main content area
+    st.header(f"{reaction_type} Reactions")
+    
+    # Display Compound A
+    st.subheader("Starting Compound")
+    display_compound(compound_a_name, compound_a_smiles)
+    
+    # Reaction examples based on selected type
+    if reaction_type == "Oxidation":
+        show_oxidation_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Reduction":
+        show_reduction_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Rearrangement":
+        show_rearrangement_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Substitution":
+        show_substitution_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Elimination":
+        show_elimination_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Addition":
+        show_addition_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Named Reactions":
+        show_named_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Coupling Reactions":
+        show_coupling_reactions(compound_a_name, compound_a_smiles)
+    elif reaction_type == "Carbonyl Chemistry":
+        show_carbonyl_reactions(compound_a_name, compound_a_smiles)
 
 # Add information section
 def add_info_section():
@@ -451,6 +585,12 @@ def add_info_section():
     - Explore different reaction types
     - See reaction conditions and reagents
     - Custom compound input via SMILES
+    - Wikipedia links for named reactions
+    
+    *New Categories Added:*
+    - Named Reactions (Diels-Alder, Wittig, Grignard, etc.)
+    - Coupling Reactions (Suzuki, Heck, Sonogashira, etc.)
+    - Carbonyl Chemistry (Knoevenagel, Michael, Mannich, etc.)
     """)
 
 if __name__ == "__main__":
